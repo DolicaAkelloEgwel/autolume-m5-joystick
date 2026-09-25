@@ -1,0 +1,27 @@
+[project]
+name = "m5stick-autolume"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Akello (234.48:4)", email = "43887608+DolicaAkelloEgwel@users.noreply.github.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "bleak>=3.0.2",
+    "numpy>=2.4.6",
+    "python-osc>=1.10.2",
+]
+
+[project.scripts]
+m5stick-autolume = "m5stick_autolume:main"
+
+[build-system]
+requires = ["uv_build>=0.12.2,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "black>=26.5.1",
+    "isort>=9.0.1",
+]

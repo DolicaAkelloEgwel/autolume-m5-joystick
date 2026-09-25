@@ -1,0 +1,48 @@
+import asyncio
+import time
+
+from bleak import BleakClient
+from numpy import arcsin, arctan, sqrt
+from pythonosc import udp_client
+
+M5_STICK_ADDR = "00:4B:12:A0:9B:32"
+DATA_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
+
+MAX_ROTATE = 45
+MAX_SCALE = 2
+
+osc_client = udp_client.SimpleUDPClient("127.0.0.1", 5005)
+
+
+def map(value, inMin, inMax, outMin, outMax):
+    return outMin + (((value - inMin) / (inMax - inMin)) * (outMax - outMin))
+
+
+def callback(sender, data):
+    data = data.decode()
+    d = eval(data)
+    osc_client.send_message(f"/speed", map(d[0], 63, -128, -2.5, 2.5))
+    osc_client.send_message(f"/diversity", map(d[1], -128, 70, -1, 2))
+    osc_client.send_message(f"/x_translate", map(d[2], 71, -123, -20, 20))
+    osc_client.send_message(f"/y_translate", map(d[3], 72, -127, -20, 20))
+
+    x_acc, y_acc, z_acc = d[4:]
+    pitch = arcsin(x_acc / sqrt(x_acc**2 + y_acc**2 + z_acc**2))
+    roll = arctan(y_acc / z_acc)
+
+    osc_client.send_message(f"/rotate", map(pitch, -1.5, 1.5, -MAX_ROTATE, MAX_ROTATE))
+    osc_client.send_message(f"/scale", map(roll, -1.5, 1.5, 0.5, 1.5))
+
+
+async def main(ble_address):
+
+    async with BleakClient(ble_address) as client:
+
+        print("Connected to BLE device:", client.is_connected)
+        await client.start_notify(DATA_UUID, callback=callback)
+
+        while True:
+            await asyncio.sleep(1)
+
+
+asyncio.run(main(M5_STICK_ADDR))
