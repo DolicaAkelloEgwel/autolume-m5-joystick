@@ -1,5 +1,4 @@
 import asyncio
-import time
 
 from bleak import BleakClient
 from numpy import arcsin, arctan, sqrt
@@ -19,14 +18,14 @@ def map(value, inMin, inMax, outMin, outMax):
 
 
 def callback(sender, data):
-    data = data.decode()
-    d = eval(data)
-    osc_client.send_message(f"/speed", map(d[0], 63, -128, -2.5, 2.5))
-    osc_client.send_message(f"/diversity", map(d[1], -128, 70, -1, 2))
-    osc_client.send_message(f"/x_translate", map(d[2], 71, -123, -20, 20))
-    osc_client.send_message(f"/y_translate", map(d[3], 72, -127, -20, 20))
+    data = eval(data.decode())
 
-    x_acc, y_acc, z_acc = d[4:]
+    osc_client.send_message(f"/speed", map(data[0], 63, -128, -2.5, 2.5))
+    osc_client.send_message(f"/diversity", map(data[1], -128, 70, -1, 2))
+    osc_client.send_message(f"/x_translate", map(data[2], 71, -123, -20, 20))
+    osc_client.send_message(f"/y_translate", map(data[3], 72, -127, -20, 20))
+
+    x_acc, y_acc, z_acc = data[4:]
     pitch = arcsin(x_acc / sqrt(x_acc**2 + y_acc**2 + z_acc**2))
     roll = arctan(y_acc / z_acc)
 
