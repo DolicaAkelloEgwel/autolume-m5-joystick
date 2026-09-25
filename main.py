@@ -14,6 +14,9 @@ MAX_SPEED = 2.5
 MIN_DIVERSITY = -1
 MAX_DIVERSITY = 2
 
+JOY_MIN = -128
+JOY_MAX = 72
+
 osc_client = udp_client.SimpleUDPClient("127.0.0.1", 5005)
 
 
@@ -26,13 +29,13 @@ def callback(sender, data):
 
     osc_client.send_message(f"/speed", map(data[0], 63, -128, -MAX_SPEED, MAX_SPEED))
     osc_client.send_message(
-        f"/diversity", map(data[1], -128, 70, MIN_DIVERSITY, MAX_DIVERSITY)
+        f"/diversity", map(data[1], JOY_MIN, JOY_MAX, MIN_DIVERSITY, MAX_DIVERSITY)
     )
     osc_client.send_message(
-        f"/x_translate", map(data[2], 71, -123, -MAX_TRANSLATE, MAX_TRANSLATE)
+        f"/x_translate", map(data[2], JOY_MAX, JOY_MIN, -MAX_TRANSLATE, MAX_TRANSLATE)
     )
     osc_client.send_message(
-        f"/y_translate", map(data[3], 72, -127, -MAX_TRANSLATE, MAX_TRANSLATE)
+        f"/y_translate", map(data[3], JOY_MAX, JOY_MIN, -MAX_TRANSLATE, MAX_TRANSLATE)
     )
 
     x_acc, y_acc, z_acc = data[4:]
