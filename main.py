@@ -9,6 +9,10 @@ DATA_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
 
 MAX_ROTATE = 45
 MAX_SCALE = 2
+MAX_TRANSLATE = 20
+MAX_SPEED = 2.5
+MIN_DIVERSITY = -1
+MAX_DIVERSITY = 2
 
 osc_client = udp_client.SimpleUDPClient("127.0.0.1", 5005)
 
@@ -20,10 +24,16 @@ def map(value, inMin, inMax, outMin, outMax):
 def callback(sender, data):
     data = eval(data.decode())
 
-    osc_client.send_message(f"/speed", map(data[0], 63, -128, -2.5, 2.5))
-    osc_client.send_message(f"/diversity", map(data[1], -128, 70, -1, 2))
-    osc_client.send_message(f"/x_translate", map(data[2], 71, -123, -20, 20))
-    osc_client.send_message(f"/y_translate", map(data[3], 72, -127, -20, 20))
+    osc_client.send_message(f"/speed", map(data[0], 63, -128, -MAX_SPEED, MAX_SPEED))
+    osc_client.send_message(
+        f"/diversity", map(data[1], -128, 70, MIN_DIVERSITY, MAX_DIVERSITY)
+    )
+    osc_client.send_message(
+        f"/x_translate", map(data[2], 71, -123, -MAX_TRANSLATE, MAX_TRANSLATE)
+    )
+    osc_client.send_message(
+        f"/y_translate", map(data[3], 72, -127, -MAX_TRANSLATE, MAX_TRANSLATE)
+    )
 
     x_acc, y_acc, z_acc = data[4:]
     pitch = arcsin(x_acc / sqrt(x_acc**2 + y_acc**2 + z_acc**2))
