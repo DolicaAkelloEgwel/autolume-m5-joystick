@@ -20,8 +20,8 @@ JOY_MAX = 72
 osc_client = udp_client.SimpleUDPClient("127.0.0.1", 1338)
 
 
-def map(value, inMin, inMax, outMin, outMax):
-    return outMin + (((value - inMin) / (inMax - inMin)) * (outMax - outMin))
+def map(value, in_min, in_max, out_min, out_max):
+    return out_min + (((value - in_min) / (in_max - in_min)) * (out_max - out_min))
 
 
 def callback(sender, data):
